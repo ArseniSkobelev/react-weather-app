@@ -34,6 +34,16 @@ export default function Weather() {
   const [currentWeather, setCurrentWeather] = useState('Weather');
 
   const [city, setCity] = useState('');
+
+  const [gradient, setGradient] = useState(false);
+
+  const [gradientClass, setGradientClass] = useState('');
+
+  // sun - 'bg-gradient-to-r from-amber-400 to-orange-500'
+  // rain - 'bg-gradient-to-r from-indigo-800 to-blue-900'
+  // clouds - 'bg-gradient-to-r from-gray-400 to-stone-500'
+  // snow - 'bg-gradient-to-r from-stone-200 to-white'
+  // fog - 'bg-gradient-to-r from-neutral-300 to-neutral-400'
   
   function getLatAndLong() {
     if(city) {
@@ -82,37 +92,37 @@ export default function Weather() {
       
       function getBgImage(weather) {
         let newWeather = weather.toLowerCase();
-        if(newWeather == "rain" || newWeather == "shower rain" || newWeather == "drizzle") {
-          
+        console.log(newWeather)
+        if(newWeather === "rain" || newWeather === "shower rain" || newWeather === "drizzle") {
+          setGradientClass('bg-gradient-to-r from-indigo-800 to-blue-900')
+          setGradient(true);
         }
         
-        if(newWeather == "clear sky" || newWeather == "few clouds") {
-          
+        else if(newWeather === "scattered clouds" || newWeather === "broken clouds" || newWeather === "clouds") {
+          setGradientClass('bg-gradient-to-r from-gray-400 to-stone-500')
+          setGradient(true);
+        }
+
+        else if(newWeather === "clear" || newWeather === "Clear") {
+          setGradientClass('bg-gradient-to-r from-amber-400 to-orange-500')
+          setGradient(true);
+        }
+
+        else if(newWeather === "snow") {
+          setGradientClass('bg-gradient-to-r from-stone-200 to-white')
+          setGradient(true);
         }
         
-        if(newWeather == "scattered clouds" || newWeather == "broken clouds" || newWeather == "clouds") {
-          
-        }
-
-        if(newWeather == "clear") {
-          setbGradient('clear')
-        }
-
-        if(newWeather == "snow") {
-          
-        }
-        
-        if(newWeather == "mist") {
-
-        } else {
-          
+        else if(newWeather === "mist") {
+          setGradientClass('bg-gradient-to-r from-neutral-300 to-neutral-400')
+          setGradient(true);
         }
 
         console.log(newWeather)
   }
   
   return (
-    <div className='flex items-left w-70 px-12 bg-cover bg-no-repeat bg-center justify-center flex-col h-full p-4' style={{}}>
+    <div className={`z-1 flex items-left w-70 px-12 bg-cover bg-no-repeat bg-center justify-center flex-col h-full p-4 ${gradient ? gradientClass : " "}`}>
         {
           weatherResultShow &&
           <WeatherDisplay weather={currentWeather} windSpeed={windSpeed} temperatureMin={temperatureMin} temperatureMax={temperatureMax} temperature={temperature} city={userCity} />

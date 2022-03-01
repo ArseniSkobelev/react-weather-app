@@ -25,8 +25,8 @@ export default function WeatherDisplay(props) {
             <h1 className='text-base py-2'>{weather}</h1>
         </div>
         <div className='flex flex-row justify-center items-center'>
-            <h1 className='text-base px-2'>Min: {temperatureMin}°C</h1>
-            <h1 className='text-base px-2'>Max: {temperatureMax}°C</h1>
+            <h1 className='text-base px-1'>Min: {temperatureMin}°C</h1>
+            <h1 className='text-base px-1'>Max: {temperatureMax}°C</h1>
         </div>
     </div>
   )
