@@ -5,6 +5,7 @@ import InputField from './InputField'
 import { useAlert } from 'react-alert'
 import { slideInUp } from 'react-animations'
 import Radium, {StyleRoot} from 'radium'
+import Header from './Header'
 const kelvinToCelsius = require('kelvin-to-celsius')
 
 export default function Weather() {
@@ -16,8 +17,6 @@ export default function Weather() {
   }
 
   const [userCity, setUserCity] = useState('');
-
-  const [bGradient, setbGradient] = useState('');
 
   const alert = useAlert();
 
@@ -31,27 +30,22 @@ export default function Weather() {
 
   const [windSpeed, setWindSpeed] = useState(0.0);
 
-  const [currentWeather, setCurrentWeather] = useState('Weather');
+  const [currentWeather, setCurrentWeather] = useState('');
 
   const [city, setCity] = useState('');
 
-  const [gradient, setGradient] = useState(false);
+  const [weatherIconTwo, setWeatherIconTwo] = useState('');
 
-  const [gradientClass, setGradientClass] = useState('');
-
-  // sun - 'bg-gradient-to-r from-amber-400 to-orange-500'
-  // rain - 'bg-gradient-to-r from-indigo-800 to-blue-900'
-  // clouds - 'bg-gradient-to-r from-gray-400 to-stone-500'
-  // snow - 'bg-gradient-to-r from-stone-200 to-white'
-  // fog - 'bg-gradient-to-r from-neutral-300 to-neutral-400'
-  
   function getLatAndLong() {
     if(city) {
       fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=${process.env.REACT_APP_OPEN_WEATHER_API_KEY}`)
       .then(res => res.json())
       .then(
         (result) => {
-          getWeather(result[0].lat, result[0].lon)
+          if(result.length === 0) {
+            alert.show('The city was not found in the APIs database! Please check your input!')
+          } else getWeather(result[0].lat, result[0].lon)
+          
         },
         (error) => {
           console.log(error)
@@ -64,6 +58,7 @@ export default function Weather() {
   function handleChange(e) {
     setCity(e.target.value)
     setUserCity(e.target.value)
+    setWeatherResultShow(false);
   };
 
   function getWeather(latitude, longtitude) {
@@ -71,68 +66,53 @@ export default function Weather() {
       .then(res => res.json())
       .then(
         (result) => {
+          setCurrentWeather(result.weather[0].main)
+          setImage(result.weather[0].main)
           setTemperature(Math.round(kelvinToCelsius(result.main.temp)))
           setTemperatureMin(Math.round(kelvinToCelsius(result.main.temp_min)))
           setTemperatureMax(Math.round(kelvinToCelsius(result.main.temp_max)))
           setWindSpeed(Math.round(kelvinToCelsius(result.wind.speed)))
-          setCurrentWeather(result.weather[0].main)
           setCity(result.name)
-          
-          getBgImage(result.weather[0].main)
-          
         },
         (error) => {
           console.log(error)
+          alert.show('The city was not found in the APIs database! Please check your input!')
         }
         )
-        
-        setWeatherResultShow(true);
-        
       }
       
-      function getBgImage(weather) {
-        let newWeather = weather.toLowerCase();
-        console.log(newWeather)
-        if(newWeather === "rain" || newWeather === "shower rain" || newWeather === "drizzle") {
-          setGradientClass('bg-gradient-to-r from-indigo-800 to-blue-900')
-          setGradient(true);
+      function setImage(weatherState) {
+        if(weatherState === "clear" || weatherState === "Clear") {
+          setWeatherIconTwo(require('../img/clear.png'));
         }
-        
-        else if(newWeather === "scattered clouds" || newWeather === "broken clouds" || newWeather === "clouds") {
-          setGradientClass('bg-gradient-to-r from-gray-400 to-stone-500')
-          setGradient(true);
+        else if(weatherState === "rain" || weatherState === "Rain" || weatherState === "Shower rain" ||  weatherState === "shower rain" || weatherState === "Drizzle" ||  weatherState === "drizzle") {
+          setWeatherIconTwo(require('../img/rain.png'));
         }
-
-        else if(newWeather === "clear" || newWeather === "Clear") {
-          setGradientClass('bg-gradient-to-r from-amber-400 to-orange-500')
-          setGradient(true);
+        else if(weatherState === "mist" || weatherState === "Mist") {
+          setWeatherIconTwo(require('../img/cloudy-day.png'));
         }
-
-        else if(newWeather === "snow") {
-          setGradientClass('bg-gradient-to-r from-stone-200 to-white')
-          setGradient(true);
+        else if(weatherState === "snow" || weatherState === "Snow"){  
+          setWeatherIconTwo(require('../img/snow.png'));
         }
-        
-        else if(newWeather === "mist") {
-          setGradientClass('bg-gradient-to-r from-neutral-300 to-neutral-400')
-          setGradient(true);
+        else if(weatherState === "scattered clouds" || weatherState === "broken clouds" || weatherState === "Scattered clouds" || weatherState === "Broken clouds" || weatherState === "clouds" || weatherState === "Clouds") {
+          setWeatherIconTwo(require('../img/clouds.png'));
+        } else {
+          setWeatherIconTwo(require('../img/clouds.png'));
         }
-
-        console.log(newWeather)
+        setWeatherResultShow(true);
   }
   
   return (
-    <div className={`z-1 flex items-left w-70 px-12 bg-cover bg-no-repeat bg-center justify-center flex-col h-full p-4 ${gradient ? gradientClass : " "}`}>
+    <div className={`z-1 flex items-center w-full bg-cover bg-no-repeat bg-center justify-center flex-col h-full bg-white`}>
+      <Header />
+      <div className='w-full flex justify-center flex-col items-center h-full'>
         {
           weatherResultShow &&
-          <WeatherDisplay weather={currentWeather} windSpeed={windSpeed} temperatureMin={temperatureMin} temperatureMax={temperatureMax} temperature={temperature} city={userCity} />
+          <WeatherDisplay iconSrc={weatherIconTwo} weather={currentWeather} windSpeed={windSpeed} temperatureMin={temperatureMin} temperatureMax={temperatureMax} temperature={temperature} city={userCity} />
         }
-        {/* <div id="background">
-          <img src={backgroundImage} alt="" />
-        </div> */}
         <InputField onChange={handleChange} placeholder='Enter city'/>
-        <Button onClick={getLatAndLong} text="Get weather" width="200px" />
-
+        <Button onClick={getLatAndLong} text="Get weather" />
+      </div>
     </div>
   )
 }
