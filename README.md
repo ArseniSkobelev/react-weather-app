@@ -28,3 +28,7 @@ REACT_APP_OPEN_WEATHER_API_KEY = " INSERT OPEN WEATHER MAP API KEY "
 ## Screenshot
 
 ![Failed to load screenshot](/readmeScreenshots/one.png?raw=true "Screenshot of the interface")
+
+&nbsp;  
+
+P.s Weather icons provided by [Icons8](https://icons8.com/)
